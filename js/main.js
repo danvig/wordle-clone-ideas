@@ -17,7 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
     
     /* THIS FUNCTION USES A LOOP TO DRAW THE SQUARES INSTEAD OF HARD CODING IT ALL IN HTML */
     createSquares();
-    canYouPlay();
+    //canYouPlay();
+    //initLocalStorage();
 
     /* 
         
@@ -31,25 +32,70 @@ document.addEventListener("DOMContentLoaded", () => {
     /* THESE VARIABLES ARE FOR SAVING GUESSED WORDS AND DETERMINING AVAILABLE SPACE IN TILES */
     let guessedWords = [[]];
     let availableSpace = 1;
+    let currentWordIndex = 0;
 
-    let word = "dairy"; /* debugging purposes. can be removed later */
+    const words = ["sweet", "dairy", "green", "comma", "rupee"];
+    let word = 'dairy'; /* debugging purposes. can be removed later */
+
     let guessedWordCount = 0; // This is used to save the number of guesses. When it reaches 6, game over.
 
     const keys = document.querySelectorAll('.keyboard-row button'); // Relates to keyboard buttons and their inputs
 
     /* VARIABLES FOR COLOUR MODE BUTTONS. USED TO TRIGGER ACTIONS */
     var colorMode = document.getElementById('colorMode');
-    var colorBlind = document.getElementById('colorBlind');
 
     /* TILE COLORS. SET TO STANDARD THEME INITIALLY, BUT CHANGING THE MODE UPDATES THESE COLOURS */
     // CURRENTLY IT DOESN'T REFRESH THE COLOURS IF THEY'VE ALREADY BEEN RETURNED TO THE GAME BOARD
     // WILL HAVE TO SEE IF WE CAN FIX THAT, BUT I DON'T THINK IT'S POSSIBLE
-    let correctLetterColor = "rgb(181, 159, 59)";
-    let correctPositionColor = "rgb(83, 141, 78)";
-    let incorrectLetterColor = "rgb(58, 58, 60)";
+    var storedCorrectLetterColor;
+    var storedCorrectPositionColor;
+    var storedIncorrectLetterColor = "rgb(58, 58, 60)";
+    var storedBackgroundColor;
+    var storedTextColor;
+    initColourScheme();
+
+    //let correctLetterColor = "rgb(181, 159, 59)";
+    //let correctPositionColor = "rgb(83, 141, 78)";
+    //let incorrectLetterColor = "rgb(58, 58, 60)";
 
     /* COLOUR BLIND */
     var colorBlindMode = false;
+
+    // INIT COLOUR SCHEME LOCAL STORAGE
+    function initColourScheme() {
+        storedCorrectLetterColor = localStorage.getItem('correctLetterColor');
+        storedCorrectPositionColor = localStorage.getItem('correctPositionColor');
+        storedIncorrectLetterColor = localStorage.getItem('incorrectLetterColor');
+        storedBackgroundColor = localStorage.getItem('backgroundColor');
+        storedTextColor = localStorage.getItem('textColor');
+        var bg = document.getElementById('container');
+
+        if (!storedCorrectLetterColor) {
+            // DEFAULT TO STANDARD DARK MODE
+            setDarkMode();
+            localStorage.setItem('correctPositionColor', "rgb(83, 141, 78)");
+            localStorage.setItem('correctLetterColor', "rgb(181, 159, 59)");
+            localStorage.setItem('incorrectLetterColor', "rgb(58, 58, 60)");
+            localStorage.setItem('backgroundColor', "#000000");
+            localStorage.setItem('textColor', "gainsboro");
+            // TILE COLOURS
+            storedCorrectPositionColor = "rgb(83, 141, 78)";
+            storedCorrectLetterColor = "rgb(181, 159, 59)";        
+            storedIncorrectLetterColor = "rgb(58, 58, 60)";
+
+        }
+        else {
+            storedCorrectLetterColor = localStorage.getItem('correctLetterColor');
+            storedCorrectPositionColor = localStorage.getItem('correctPositionColor');
+            storedIncorrectLetterColor = localStorage.getItem('incorrectLetterColor');
+            storedBackgroundColor = localStorage.getItem('backgroundColor');
+            storedTextColor = localStorage.getItem('textColor');
+            bg.style.backgroundColor = storedBackgroundColor;
+            document.getElementsByClassName("title")[0].style.color = storedTextColor;
+            document.getElementById('schemeBox').style.color = storedTextColor;
+            document.getElementById('clrBlindBox').style.color = storedTextColor;
+        }
+    }
 
     // BASIC FUNCTION TO CHECK THE GUESSED WORDS
     function getCurrentWordArr() {
@@ -78,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Partially tutorial, I modified it so the colours are variables which changes based on the scheme
         if (!isCorrectLetter) {
             //return "rgb(58, 58, 60)";
-            return incorrectLetterColor;
+            return storedIncorrectLetterColor;
         }
 
         const letterInThatPosition = word.charAt(index);
@@ -86,11 +132,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (isCorrectPosition) {
             //return "rgb(83, 141, 78)";
-            return correctPositionColor;
+            return storedCorrectPositionColor;
         }
 
         //return "rgb(181, 159, 59)";
-        return correctLetterColor;
+        return storedCorrectLetterColor;
     }
 
     // THIS IS WHAT HAPPENS WHEN A USER SUBMITS A WORD
@@ -189,6 +235,78 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 /* -------------------------------------- THIS IS MY ORIGINAL WORK FROM THIS POINT FORWARD. -------------------------------------- */
+    
+    // Experimenting with setting colour modes in local storage
+
+    /* DARK MODE */
+    function setDarkMode() {
+        var bg = document.getElementById('container');
+        bg.style.backgroundColor = "#000000";
+        localStorage.setItem('backgroundColor', "#000000");
+        localStorage.setItem('textColor', 'gainsboro');
+        document.getElementsByClassName("title")[0].style.color = "gainsboro";
+        document.getElementById('schemeBox').style.color = "gainsboro";
+        document.getElementById('clrBlindBox').style.color = "gainsboro";
+        
+        // TILE COLOURS
+        storedCorrectPositionColor = "rgb(83, 141, 78)";
+        storedCorrectLetterColor = "rgb(181, 159, 59)";        
+        storedIncorrectLetterColor = "rgb(58, 58, 60)";
+        storedBackgroundColor = "#000000";
+    }
+
+    /* LIGHT MODE */
+    function setLightMode() {
+        var bg = document.getElementById('container');
+        bg.style.backgroundColor="#FFFFFF"; // Change back colour
+        storedBackgroundColor = "#FFFFFF";
+        localStorage.setItem('backgroundColor', "#FFFFFF");
+        localStorage.setItem('textColor', 'black');
+        document.getElementsByClassName("title")[0].style.color = "black";
+        document.getElementById('schemeBox').style.color = "black";
+        document.getElementById('clrBlindBox').style.color = "black";
+    }
+    
+    /* COLOUR BLIND MODE */
+    function colourBlind() {
+        localStorage.setItem('correctPositionColor', "rgb(244, 119, 55");
+        localStorage.setItem('correctLetterColor', "rgb(131, 191, 249");
+        storedCorrectPositionColor = "rgb(244, 119, 55)";
+        storedCorrectLetterColor = "rgb(132, 191, 249)";
+        storedIncorrectLetterColor = "rgb(58, 58, 60)";
+    }
+
+    /* NORMAL VISION MODE (NEED A BETTER WAY TO DESCRIBE THAT) */
+    function normalMode() {
+        localStorage.setItem('correctPositionColor', "rgb(83, 141, 78)");
+        localStorage.setItem('correctLetterColor', "rgb(181, 159, 59)");
+        storedCorrectPositionColor = "rgb(83, 141, 78)";
+        storedCorrectLetterColor = "rgb(181, 159, 59)";        
+        storedIncorrectLetterColor = "rgb(58, 58, 60)";
+    }
+
+    /* TRIGGERING COLOUR MODES */
+    var scheme = document.querySelector("input[name=scheme]");
+    var clrBlind = document.querySelector("input[name=clrBlind]");
+
+    scheme.addEventListener('change', function() {
+        if (this.checked) {
+            setLightMode();
+        }
+        else {
+            setDarkMode();
+        }
+    });
+
+    clrBlind.addEventListener('change', function() {
+        if (this.checked) {
+            colourBlind();
+        }
+        else {
+            normalMode();
+        }
+    });
+
     /* CHANGE COLOR MODE */
     function changeColorMode() {
         /*
@@ -204,42 +322,26 @@ document.addEventListener("DOMContentLoaded", () => {
         if (bg.style.backgroundColor=="rgb(0, 0, 0)") {
             /* CHANGE TO LIGHT MODE */
             bg.style.backgroundColor="#FFFFFF"; // Change back colour
+            localStorage.setItem('backgroundColor', "#FFFFFF");
+            localStorage.setItem('textColor', 'black');
             document.getElementsByClassName("title")[0].style.color = "black";
             document.getElementsByClassName("message")[0].style.color = "black";
-            colorMode.textContent = "Change to Dark Mode"; // Change button text
+            colorMode.textContent = "Change Colour Scheme"; // Change button text
+            localStorage.setItem('buttonText', 'Change to Dark Mode')
         }
         else {
             /* CHANGE TO DARK MODE */
             bg.style.backgroundColor="#000000";
+            localStorage.setItem('backgroundColor', "#000000");
+            localStorage.setItem('textColor', 'gainsboro');
             document.getElementsByClassName("title")[0].style.color = "gainsboro";
             document.getElementsByClassName("message")[0].style.color = "gainsboro";
-            colorMode.textContent = "Change to Light Mode";
+            colorMode.textContent = "Change Colour Scheme";
+            localStorage.setItem('buttonText', 'Change to Light Mode')
         }
     }
 
-    // If the user presses the change colour mode button, it runs this function
-    colorMode.addEventListener('click', function(event) {
-        changeColorMode();
-    });
-
-    /* COLOUR BLIND SCHEME */
-    function setColorBlind() {
-
-        /* Change to Colour Blind */
-        colorBlindMode = true; // Set colour blind mode
-        // Change tile colours
-        correctPositionColor = "rgb(244, 119, 55)";
-        correctLetterColor = "rgb(132, 191, 249)";
-        // Hides the button so they can't change the mode unless they refresh
-        colorBlind.style.visibility = 'hidden';
-
-        alert("Colour Blind scheme has been set. Refresh browser to return to standard colour scheme");
-    }
-
-    // If a user presses the colour blind mode button, it runs this function
-    colorBlind.addEventListener('click', function(event) {
-        setColorBlind();
-    });
+    
 
     /* DETERMINE IF THEY CAN PLAY TODAY */
     function canYouPlay() {
@@ -252,13 +354,9 @@ document.addEventListener("DOMContentLoaded", () => {
             // I tried to make it so the keyboard stays but the buttons stay unclickble, but it didn't work
             alert("You've already played today's Wordle. Please come back tomorrow");
             
-            // Grab the content for the message and keyboard
-            var keyboardContainer = document.getElementById("keyboard-container");
-            var alertMessage = document.getElementById("message");
-            
             // Disable keyboard and send an alert
+            var keyboardContainer = document.getElementById("keyboard-container");
             keyboardContainer.style.visibility = 'hidden';
-            alertMessage.innerText = "You've already played today. Come back tomorrow!";
         }
     }
 })

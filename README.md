@@ -1,4 +1,4 @@
-# wordle-clone-ideas
+#wordle-clone-ideas
 
 I made this basic, unfinished, Wordle clone following an online tutorial.
 
