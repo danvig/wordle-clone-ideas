@@ -24,11 +24,7 @@
             <!-- HEADING -->
             <header>
                 <h1 class="title">WORDLE</h1>
-                <p id="message" class="message"></p>
-                <br>
             </header>
-
-            <br><br>
 
             <!-- GRID FOR ENTERING LETTERS -->
             <div id="board-container">
@@ -76,10 +72,13 @@
                     <button data-key="del" class="wide-button">Del</button>
                 </div>
             </div>
-            <button id="colorMode">Change to Light Mode</button>
-            <br>
-            <button id="colorBlind">Set Colour Blind Theme</button>
-            <br><br>
+            <span>
+                <input type="checkbox" name="scheme" id="schemeBox">
+                <label for="scheme">Enable Light Mode</label>
+                <br>
+                <input type="checkbox" name="clrBlind" id="clrBlindBox">
+                <label for="clrBlind">Colour Blind Mode</label>
+            </span>
         </div>
     </div>
 </body>
